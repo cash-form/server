@@ -9,8 +9,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthDto {
   @ApiProperty({
-    description: '닉네임',
-    example: '홍길동',
+    description: '닉네임 / 2자 ~ 8자 / 특수문자 언더바 외 불가능',
+    example: '홍길동_123',
   })
   @IsString()
   @MinLength(2, { message: '닉네임은 최소 2자 이상이어야 합니다.' })
@@ -18,11 +18,10 @@ export class AuthDto {
   nickname: string;
 
   @ApiProperty({
-    description: '계정 이메일 (영문 또는 숫자)',
+    description: '계정 이메일',
     example: 'user123@email.com',
   })
   @IsString()
-  @MinLength(5, { message: '계정 이메일은 최소 5자 이상이어야 합니다.' })
   email: string;
 
   @ApiProperty({

@@ -9,9 +9,13 @@ export class BooleanResponseType {
 }
 
 export enum UserStatusType {
-  PENDING = 0,
-  APPROVED = 1,
-  REJECTED = 2,
-  BANNED = 3,
-  DELETED = 4,
+  NORMAL = 1,
+  BANNED = 2,
+  DELETED = 3,
+}
+
+export enum UserType {
+  NORMAL = 1,
+  BUSINESS = 2,
+  ADMIN = 3,
 }

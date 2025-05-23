@@ -18,7 +18,7 @@ async function bootstrap() {
       'http://localhost:3000',
     ]);
 
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix('v1');
 
     // 보안 헤더 설정 - Swagger UI와의 호환성을 위해 일부 옵션 조정
     app.use(
@@ -76,7 +76,7 @@ async function bootstrap() {
       )
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api/document', app, document, {
+    SwaggerModule.setup('docs', app, document, {
       swaggerOptions: {
         persistAuthorization: true,
         swagger: {

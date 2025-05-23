@@ -31,13 +31,18 @@ export class AuthService {
 
   async createUser(userDto: AuthDto): Promise<TokenModel> {
     const { email, password } = userDto;
-    const existingUser = await this.userRepository.findOne({
+    const existUser = await this.userRepository.findOne({
       where: { email },
     });
 
-    if (existingUser) {
+    if (existUser) {
       throw new ConflictException('이미 존재하는 계정 아이디입니다.');
     }
+
+    if (existUser!.nickname === userDto.nickname) {
+      throw new ConflictException('이미 존재하는 닉네임입니다.');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user: User = this.userRepository.create({
       ...userDto,
