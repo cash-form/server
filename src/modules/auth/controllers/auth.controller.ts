@@ -8,6 +8,7 @@ import {
   AuthRegisterSwagger,
 } from '../swagger/auth.swagger';
 import { TokenModel } from 'src/common/models/token.model';
+import { LoginDto } from '../dtos/login.dto';
 
 @Controller('auth')
 @ApiTags('인증')
@@ -27,7 +28,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @AuthLoginSwagger()
   async login(
-    @Body() loginDto: AuthDto,
+    @Body() loginDto: LoginDto,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return this.authService.login(loginDto);
   }

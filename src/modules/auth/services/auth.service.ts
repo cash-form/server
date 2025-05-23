@@ -15,6 +15,7 @@ import { JwtPayload } from '../jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
 import { TokenModel } from 'src/common/models/token.model';
+import { LoginDto } from '../dtos/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,17 +31,19 @@ export class AuthService {
   ) {}
 
   async createUser(userDto: AuthDto): Promise<TokenModel> {
-    const { email, password } = userDto;
-    const existUser = await this.userRepository.findOne({
+    const { email, password, nickname } = userDto;
+    const sameNickname = await this.userRepository.findOne({
+      where: { nickname },
+    });
+    const sameEmail = await this.userRepository.findOne({
       where: { email },
     });
 
-    if (existUser) {
-      throw new ConflictException('이미 존재하는 계정 아이디입니다.');
-    }
-
-    if (existUser!.nickname === userDto.nickname) {
+    if (sameNickname) {
       throw new ConflictException('이미 존재하는 닉네임입니다.');
+    }
+    if (sameEmail) {
+      throw new ConflictException('이미 존재하는 계정 아이디입니다.');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -59,8 +62,10 @@ export class AuthService {
   }
 
   async login(
-    loginDto: AuthDto,
+    loginDto: LoginDto,
   ): Promise<{ accessToken: string; refreshToken: string }> {
+    console.log('login', loginDto);
+
     const { email, password } = loginDto;
     const user = await this.userService.validateUser(email, password);
     if (!user) {
