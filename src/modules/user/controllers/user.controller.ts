@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from 'src/types';
 import {
   CheckDuplicateAccountSwagger,
+  CheckDuplicateEmailSwagger,
   CheckDuplicateNicknameSwagger,
   DeleteUserSwagger,
 } from '../swagger/user.swagger';
@@ -35,7 +36,7 @@ export class UserController {
 
   @Get('duplicate/account')
   @HttpCode(HttpStatus.OK)
-  @CheckDuplicateAccountSwagger()
+  @CheckDuplicateEmailSwagger()
   async checkDuplicateAccount(
     @Query() params: { account: string },
   ): Promise<{ result: boolean }> {
@@ -47,9 +48,11 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @CheckDuplicateNicknameSwagger()
   async checkDuplicateName(
-    @Query() params: { name: string },
+    @Query() params: { nickname: string },
   ): Promise<{ result: boolean }> {
-    const result = await this.userService.checkDuplicateNickname(params.name);
+    const result = await this.userService.checkDuplicateNickname(
+      params.nickname,
+    );
     return { result };
   }
 
