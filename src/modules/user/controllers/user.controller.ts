@@ -1,0 +1,64 @@
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Delete,
+  UseGuards,
+  Req,
+  Get,
+  Query,
+} from '@nestjs/common';
+import { UserService } from '../services/user.service';
+import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { AuthenticatedRequest } from 'src/types';
+import {
+  CheckDuplicateAccountSwagger,
+  CheckDuplicateNicknameSwagger,
+  DeleteUserSwagger,
+} from '../swagger/user.swagger';
+import UserModel from '../models/user.model';
+
+@ApiTags('사용자')
+@Controller('users')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @CheckDuplicateAccountSwagger()
+  async getMe(@Req() req: AuthenticatedRequest): Promise<UserModel> {
+    const id = req.user.sub;
+    return await this.userService.findById(id);
+  }
+
+  @Get('duplicate/account')
+  @HttpCode(HttpStatus.OK)
+  @CheckDuplicateAccountSwagger()
+  async checkDuplicateAccount(
+    @Query() params: { account: string },
+  ): Promise<{ result: boolean }> {
+    const result = await this.userService.checkDuplicateAccount(params.account);
+    return { result };
+  }
+
+  @Get('duplicate/name')
+  @HttpCode(HttpStatus.OK)
+  @CheckDuplicateNicknameSwagger()
+  async checkDuplicateName(
+    @Query() params: { name: string },
+  ): Promise<{ result: boolean }> {
+    const result = await this.userService.checkDuplicateNickname(params.name);
+    return { result };
+  }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @DeleteUserSwagger()
+  async delete(@Req() req: AuthenticatedRequest): Promise<void> {
+    const userId = req.user.sub;
+    await this.userService.deleteUser(userId);
+  }
+}
