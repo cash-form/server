@@ -38,9 +38,9 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @CheckDuplicateEmailSwagger()
   async checkDuplicateAccount(
-    @Query() params: { account: string },
+    @Query() params: { email: string },
   ): Promise<{ result: boolean }> {
-    const result = await this.userService.checkDuplicateAccount(params.account);
+    const result = await this.userService.checkDuplicateAccount(params.email);
     return { result };
   }
 
