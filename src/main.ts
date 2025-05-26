@@ -14,9 +14,9 @@ async function bootstrap() {
     const configService = app.get(ConfigService);
     const port = configService.get<number>('PORT', 4000);
     const environment = configService.get<string>('NODE_ENV', 'development');
-    const allowedOrigins = configService.get<string[]>('ALLOWED_ORIGINS', [
-      'http://localhost:3000',
-    ]);
+    const allowedOrigins = configService
+      .get<string>('ALLOWED_ORIGINS', '')
+      .split(',');
 
     app.setGlobalPrefix('v1');
 
@@ -33,24 +33,14 @@ async function bootstrap() {
       }),
     );
 
-    // CORS 설정
     app.enableCors({
       origin: (origin, callback) => {
-        // origin이 없거나 허용된 origin 목록에 있으면 허용
-        if (
-          !origin ||
-          allowedOrigins.some((allowedOrigin) => {
-            if (allowedOrigin.includes('*')) {
-              return new RegExp(allowedOrigin.replace('*', '.*')).test(origin);
-            }
-            return allowedOrigin === origin;
-          })
-        ) {
-          callback(null, true);
-        } else {
+        if (!origin || !allowedOrigins.includes(origin)) {
           logger.warn(`CORS 거부: ${origin} 도메인에서의 요청`);
           callback(new Error('Not allowed by CORS'));
         }
+
+        return callback(null, true);
       },
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
