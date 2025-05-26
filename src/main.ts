@@ -33,14 +33,26 @@ async function bootstrap() {
       }),
     );
 
+    // CORS 설정
     app.enableCors({
-      origin: (origin, callback) => {
-        if (!origin || !allowedOrigins.includes(origin)) {
+      origin: (
+        origin: string | undefined,
+        callback: (error: Error | null, allow: boolean) => void,
+      ) => {
+        if (
+          !origin ||
+          allowedOrigins.some((allowedOrigin) => {
+            if (allowedOrigin.includes('*')) {
+              return new RegExp(allowedOrigin.replace('*', '.*')).test(origin);
+            }
+            return allowedOrigin === origin;
+          })
+        ) {
+          callback(null, true);
+        } else {
           logger.warn(`CORS 거부: ${origin} 도메인에서의 요청`);
-          callback(new Error('Not allowed by CORS'));
+          callback(new Error('Not allowed by CORS'), false);
         }
-
-        return callback(null, true);
       },
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
