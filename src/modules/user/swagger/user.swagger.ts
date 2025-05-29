@@ -13,43 +13,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { BooleanResponseType } from 'src/types';
-import { User } from '../entities/user.entity';
-
-export function CheckDuplicateAccountSwagger() {
-  return applyDecorators(
-    ApiOperation({
-      summary: '내 정보 조회',
-      description: '토큰으로 인증하여 본인의 정보를 조회합니다.',
-    }),
-
-    ApiResponse({
-      status: 200,
-      description: '성공',
-      example: {
-        id: 1,
-        email: 'user123@email.com',
-        nickname: 'user123',
-        status: 1,
-        userType: 1,
-      },
-    }),
-    ApiResponse({
-      status: 400,
-      description: '토큰을 받지 못함',
-      example: new BadRequestException('토큰이 없어 확인이 불가능합니다.'),
-    }),
-    ApiResponse({
-      status: 404,
-      description: '없는 토큰',
-      example: new NotFoundException('계정을 찾을 수 없습니다.'),
-    }),
-    ApiResponse({
-      status: 500,
-      description: '서버 오류',
-      example: new InternalServerErrorException(),
-    }),
-  );
-}
+import UserModel from '../models/user.model';
 
 export function CheckDuplicateEmailSwagger() {
   return applyDecorators(
@@ -66,6 +30,7 @@ export function CheckDuplicateEmailSwagger() {
     ApiResponse({
       status: 200,
       description: '사용 가능',
+      type: Boolean,
       example: new BooleanResponseType(),
     }),
     ApiResponse({
@@ -95,8 +60,8 @@ export function CheckDuplicateNicknameSwagger() {
     ApiQuery({
       name: 'nickname',
       required: true,
-      description: '확인할 닉네임',
       type: String,
+      description: '확인할 닉네임',
     }),
     ApiResponse({
       status: 200,
@@ -131,7 +96,7 @@ export function FindMeSwagger() {
     ApiResponse({
       status: 200,
       description: '조회 성공',
-      type: User,
+      type: UserModel,
       example: { id: 1, email: 'user123@email.com' },
     }),
     ApiResponse({

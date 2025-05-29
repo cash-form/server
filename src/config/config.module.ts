@@ -22,6 +22,7 @@ import * as Joi from 'joi';
         JWT_EXPIRES_IN: Joi.string().default('1d'),
         JWT_REFRESH_SECRET: Joi.string().required(),
         JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+
         // DB 설정 검증
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.number().default(3306),
@@ -33,6 +34,12 @@ import * as Joi from 'joi';
           .required(),
         DB_SYNC: Joi.string().valid('true', 'false').default('false'),
         DB_LOGGING: Joi.string().valid('true', 'false').default('true'),
+
+        // AWS 설정 검증
+        AWS_ACCESS_KEY_ID: Joi.string().required(),
+        AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+        AWS_REGION: Joi.string().default('ap-northeast-2'),
+        AWS_S3_BUCKET_NAME: Joi.string().required(),
       }),
     }),
   ],
