@@ -7,6 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppConfigModule } from './config/config.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { SurveyModule } from './modules/survey/survey.module';
+import { ImageModule } from './modules/image/image.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { UserModule } from './modules/user/user.module';
     PingModule,
     AuthModule,
     UserModule,
+    SurveyModule,
+    ImageModule,
   ],
 })
 export class AppModule {}

@@ -37,7 +37,7 @@ export class User {
   nickname: string;
 
   @ApiProperty({
-    description: '사용자 상태값 1: 정상, 2: 제명, 3: 탈퇴',
+    description: '사용자 상태값, 1: 정상, 2: 제명, 3: 탈퇴',
     example: 1,
     type: Number,
   })
@@ -45,13 +45,18 @@ export class User {
   status: UserStatusType;
 
   @ApiProperty({
-    description: '1: 일반, 2: 사업자, 3: 관리자',
+    description: '사용자 타입, 1: 일반, 2: 관리자',
     example: 1,
     type: Number,
   })
   @Column({ default: 1 })
   userType: UserType;
 
+  @ApiProperty({
+    description: '비밀번호',
+    example: 'abcdpassword123',
+    type: Number,
+  })
   @Column()
   @Exclude()
   password: string;

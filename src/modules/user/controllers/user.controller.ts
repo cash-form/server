@@ -13,10 +13,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from 'src/types';
 import {
-  CheckDuplicateAccountSwagger,
   CheckDuplicateEmailSwagger,
   CheckDuplicateNicknameSwagger,
   DeleteUserSwagger,
+  FindMeSwagger,
 } from '../swagger/user.swagger';
 import UserModel from '../models/user.model';
 
@@ -28,7 +28,7 @@ export class UserController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @CheckDuplicateAccountSwagger()
+  @FindMeSwagger()
   async getMe(@Req() req: AuthenticatedRequest): Promise<UserModel> {
     const id = req.user.sub;
     return await this.userService.findById(id);
