@@ -3,18 +3,21 @@ import UserModel from 'src/modules/user/models/user.model';
 import SurveyGuideModel from './surveyGuide.model';
 import SurveyQuestionModel from './surveyQuestion.model';
 import { SurveyProductType } from 'src/types';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
 export default class SurveyModel {
   @ApiProperty({
     description: '설문조사 폼 ID',
     example: 1,
   })
+  @Expose()
   id: number;
 
   @ApiProperty({
     description: '설문조사 폼 제목',
     example: '고객 만족도 조사',
   })
+  @Expose()
   title: string;
 
   @ApiProperty({
@@ -22,6 +25,7 @@ export default class SurveyModel {
     example: '2023-10-01T00:00:00.000Z',
     type: Date,
   })
+  @Expose()
   startDate: Date;
 
   @ApiProperty({
@@ -29,6 +33,7 @@ export default class SurveyModel {
     example: '2023-10-31T23:59:59.999Z',
     type: Date,
   })
+  @Expose()
   endDate: Date;
 
   @ApiProperty({
@@ -36,6 +41,7 @@ export default class SurveyModel {
     example: 'BASIC',
     enum: ['BASIC', 'DELUXE', 'PREMIUM', 'PROFESSIONAL'],
   })
+  @Expose()
   product: SurveyProductType;
 
   @ApiProperty({
@@ -43,6 +49,7 @@ export default class SurveyModel {
     example: 200,
     type: Number,
   })
+  @Expose()
   credit: number;
 
   @ApiProperty({
@@ -50,6 +57,7 @@ export default class SurveyModel {
     example: '2023-10-01T00:00:00.000Z',
     type: Date,
   })
+  @Expose()
   createdAt: Date;
 
   @ApiProperty({
@@ -57,12 +65,32 @@ export default class SurveyModel {
     example: '2023-10-01T00:00:00.000Z',
     type: Date,
   })
+  @Expose()
   updatedAt: Date;
 
   @ApiProperty({
     description: '설문조사 작성자',
     example: new UserModel(),
     type: UserModel,
+  })
+  @Expose()
+  @Transform(({ value }) => {
+    const {
+      email,
+      password,
+      refreshToken,
+      isDeleted,
+      marketingConsent,
+      newsletterConsent,
+      createdAt,
+      updatedAt,
+      status,
+      ...model
+    } = value;
+    return model;
+  })
+  @Type(() => UserModel, {
+    keepDiscriminatorProperty: true,
   })
   author: UserModel;
 
@@ -71,6 +99,7 @@ export default class SurveyModel {
     example: 41,
     type: Number,
   })
+  @Expose()
   participantCount: number;
 
   @ApiProperty({
@@ -81,6 +110,8 @@ export default class SurveyModel {
       images: ['https://example.com/header-image.jpg'],
     },
   })
+  @Type(() => SurveyGuideModel)
+  @Expose()
   header: SurveyGuideModel;
 
   @ApiProperty({
@@ -91,11 +122,17 @@ export default class SurveyModel {
       images: [],
     },
   })
+  @Type(() => SurveyGuideModel)
+  @Expose()
   footer: SurveyGuideModel;
 
   @ApiProperty({
     description: '설문조사 질문 목록',
     type: () => SurveyQuestionModel,
   })
+  @Expose()
   questions: SurveyQuestionModel[];
+
+  @Exclude()
+  guides: SurveyGuideModel[];
 }

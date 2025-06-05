@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { SurveyModule } from './modules/survey/survey.module';
 import { ImageModule } from './modules/image/image.module';
+import { PaginationModule } from './common/modules/pagination.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -30,11 +32,13 @@ import { ImageModule } from './modules/image/image.module';
       inject: [ConfigService],
       global: true, // 글로벌로 설정
     }),
+    PaginationModule,
     PingModule,
     AuthModule,
     UserModule,
     SurveyModule,
     ImageModule,
+    PaymentModule,
   ],
 })
 export class AppModule {}

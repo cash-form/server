@@ -64,8 +64,6 @@ export class AuthService {
   async login(
     loginDto: LoginDto,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    console.log('login', loginDto);
-
     const { email, password } = loginDto;
     const user = await this.userService.validateUser(email, password);
     if (!user) {

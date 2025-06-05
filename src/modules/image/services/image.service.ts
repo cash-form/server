@@ -2,6 +2,8 @@ import {
   Injectable,
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -164,5 +166,40 @@ export class ImageService {
       mimeType: image.mimeType,
       createdAt: image.createdAt,
     }));
+  }
+
+  async deleteImage(userId: number, imageId: number): Promise<void> {
+    const image = await this.imageRepository.findOne({
+      where: { id: imageId },
+    });
+
+    if (!image) {
+      throw new NotFoundException(
+        '해당 이미지는 이미 삭제되었거나 존재하지 않습니다.',
+      );
+    }
+
+    if (+image.userId !== +userId) {
+      throw new ForbiddenException('해당 이미지를 삭제할 권한이 없습니다.');
+    }
+
+    // S3에서 이미지 삭제
+    const s3Key = image.url.split('/').slice(-2).join('/');
+    const command = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: s3Key,
+    });
+
+    try {
+      await this.s3Client.send(command);
+      await this.imageRepository.remove(image);
+
+      return;
+    } catch (error) {
+      console.error('S3 이미지 삭제 오류:', error);
+      throw new InternalServerErrorException(
+        '삭제과정에서 서버문제가 발생했습니다.',
+      );
+    }
   }
 }

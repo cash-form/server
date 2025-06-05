@@ -10,12 +10,17 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../entities/user.entity';
 import { plainToInstance } from 'class-transformer';
+import { PaginationService } from 'src/common/services/pagination.service';
+import { PaginationModel } from 'src/common/models/pagination.model';
+import PaginationDto from 'src/common/dtos/pagination.dto';
+import UserModel from '../models/user.model';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly paginationService: PaginationService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -82,6 +87,9 @@ export class UserService {
     user.isDeleted = true;
     user.refreshToken = ''; // 리프레시 토큰 초기화
     await this.userRepository.save(user);
+
+    // 탈퇴 후 204 No Content 반환
+    return;
   }
 
   async validateRefreshToken(
@@ -94,5 +102,30 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async getUserList(
+    paginationDto: PaginationDto,
+  ): Promise<PaginationModel<UserModel>> {
+    const searchFields = ['email', 'nickname'];
+
+    const result = await this.paginationService.paginate<User>(
+      this.userRepository,
+      paginationDto,
+      undefined,
+      searchFields,
+    );
+
+    // User 엔티티를 UserModel로 변환
+    const transformedList = result.list.map((user) =>
+      plainToInstance(UserModel, user, {
+        excludeExtraneousValues: false,
+      }),
+    );
+
+    return {
+      ...result,
+      list: transformedList,
+    };
   }
 }
