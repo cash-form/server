@@ -1,22 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsEnum } from 'class-validator';
-
-export enum ImageType {
-  SURVEY = 'SURVEY',
-  PROFILE = 'PROFILE',
-  PRODUCT = 'PRODUCT',
-  GENERAL = 'GENERAL',
-}
+import { ImageCategoryType } from 'src/types';
 
 export class ImageUploadDto {
   @ApiProperty({
-    description: '이미지 사용 용도 타입',
-    example: 'SURVEY',
-    enum: ImageType,
+    description:
+      '이미지 사용 용도 타입 - 1: 설문조사, 2: 프로필, 3: 상품, 4: 공용 / 기본값 4 (일반)',
+    example: 4,
+    enum: ImageCategoryType,
     required: false,
-    default: ImageType.GENERAL,
+    default: ImageCategoryType.GENERAL,
   })
   @IsOptional()
-  @IsEnum(ImageType)
-  type?: ImageType = ImageType.GENERAL;
+  @IsEnum(ImageCategoryType)
+  type?: ImageCategoryType = ImageCategoryType.GENERAL;
+
+  @ApiProperty({
+    description: '업로드할 이미지 파일 (JPEG, PNG, GIF, WebP 지원, 최대 10MB)',
+    type: 'string',
+    format: 'binary',
+  })
+  file: any;
 }

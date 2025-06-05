@@ -42,11 +42,12 @@ export class Payment {
   date: Date;
 
   @ApiProperty({
-    description: '결제상태값',
-    example: 'SUCCESS',
+    description:
+      '결제상태값 - 1: SUCCESS, 2: FAILED, 3: PENDING, 4: CANCELED, 5: REFUNDED',
+    example: 1,
     enum: PaymentStatusType,
   })
-  @Column({ nullable: true, default: PaymentStatusType[1] })
+  @Column({ nullable: true, default: PaymentStatusType.SUCCESS })
   status: PaymentStatusType;
 
   @ApiProperty({
@@ -67,18 +68,18 @@ export class Payment {
   amount: number;
 
   @ApiProperty({
-    description: '결제 대상',
-    example: 'SURVEY',
+    description: '결제 대상 - 1: "SURVEY", 2: "CREDIT"',
+    example: 1,
     required: true,
   })
-  @Column({ nullable: true, default: PaymentType[1] })
+  @Column({ nullable: true, default: PaymentType.SURVEY })
   type: PaymentType;
 
   @ApiProperty({
-    description: '결제수단 - "CARD", "BANK"',
+    description: '결제수단 - 1: "CARD", 2: "BANK"',
     enum: PaymentMethodType,
     required: true,
-    example: 'CARD',
+    example: 1,
   })
   @Column({ nullable: true })
   method: PaymentMethodType;

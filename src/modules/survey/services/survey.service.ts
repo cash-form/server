@@ -15,6 +15,7 @@ import SurveyModel from '../models/survey.model';
 import { PaginationModel } from 'src/common/models/pagination.model';
 import PaginationDto from 'src/common/dtos/pagination.dto';
 import { PaginationService } from 'src/common/services/pagination.service';
+import { SurveyGuideType } from 'src/types';
 
 @Injectable()
 export class SurveyService {
@@ -50,13 +51,13 @@ export class SurveyService {
 
     const newHeader = this.guideRepository.create({
       ...surveyDto.header,
-      type: 'HEADER',
+      type: SurveyGuideType.HEADER,
       survey: savedSurvey,
     });
 
     const newFooter = this.guideRepository.create({
       ...surveyDto.footer,
-      type: 'FOOTER',
+      type: SurveyGuideType.FOOTER,
       survey: savedSurvey,
     });
 
@@ -138,11 +139,11 @@ export class SurveyService {
     }
 
     const headerGuide = completeSurvey.guides?.find(
-      (guide) => guide.type === 'HEADER',
+      (guide) => guide.type === SurveyGuideType.HEADER,
     );
 
     const footerGuide = completeSurvey.guides?.find(
-      (guide) => guide.type === 'FOOTER',
+      (guide) => guide.type === SurveyGuideType.FOOTER,
     );
 
     return plainToInstance(

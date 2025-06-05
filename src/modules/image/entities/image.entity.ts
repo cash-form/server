@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
+import { ImageCategoryType } from 'src/types';
 
 @Entity()
 export class Image {
@@ -19,11 +20,13 @@ export class Image {
   id: number;
 
   @ApiProperty({
-    description: '이미지 사용 용도 타입',
-    example: 'SURVEY',
+    description:
+      '이미지 사용 용도 타입 - 1: SURVEY, 2: PROFILE, 3: PRODUCT, 4: GENERAL',
+    enum: ImageCategoryType,
+    example: 1,
   })
   @Column({ nullable: false })
-  type: string;
+  type: ImageCategoryType;
 
   @ApiProperty({
     description: '이미지 URL',

@@ -10,17 +10,19 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import SurveyGuideDto from './surveyGuide.dto';
 import SurveyQuestionDto from './surveyQuestion.dto';
+import { SurveyProductType } from 'src/types';
 
 export class SurveyDto {
   @ApiProperty({
-    description: '상품 종류',
-    example: 'BASIC',
-    enum: ['BASIC', 'DELUXE', 'PREMIUM', 'PROFESSIONAL'],
+    description:
+      '상품 종류 - 1:"BASIC", 2:"DELUXE", 3:"PREMIUM", 4:"PROFESSIONAL"',
+    example: 1,
+    enum: SurveyProductType,
   })
-  @IsEnum(['BASIC', 'DELUXE', 'PREMIUM', 'PROFESSIONAL'])
+  @IsEnum(SurveyProductType)
   @IsNotEmpty()
   @Expose({ name: 'product' })
-  public readonly product: 'BASIC' | 'DELUXE' | 'PREMIUM' | 'PROFESSIONAL';
+  public readonly product: SurveyProductType;
 
   @ApiProperty({
     description: '설문조사 제목',

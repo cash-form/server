@@ -13,7 +13,11 @@ import { Exclude } from 'class-transformer';
 import { SurveyGuide } from './surveyGuide.entity';
 import { SurveyQuestion } from './surveyQuestion.entity';
 import { User } from 'src/modules/user/entities/user.entity';
-import { SurveyProductType, SurveyStatusType } from 'src/types';
+import {
+  SurveyGuideType,
+  SurveyProductType,
+  SurveyStatusType,
+} from 'src/types';
 
 @Entity()
 export class Survey {
@@ -25,11 +29,12 @@ export class Survey {
   id: number;
 
   @ApiProperty({
-    description: '설문조사 상태값',
-    example: 'BEFORE',
+    description:
+      '설문조사 상태값 - 1: BEFORE, 2: PROGRESS, 3: FINISH, 4: DELETED',
+    example: 1,
     enum: SurveyStatusType,
   })
-  @Column({ nullable: true, default: SurveyStatusType[1] })
+  @Column({ nullable: true, default: SurveyStatusType.BEFORE })
   status: SurveyStatusType;
 
   @ApiProperty({
@@ -57,7 +62,7 @@ export class Survey {
 
   @ApiProperty({
     description:
-      '결제된 상품 명 - "BASIC", "DELUXE", "PREMIUM", "PROFESSIONAL"',
+      '결제된 상품 명 - 1:"BASIC", 2:"DELUXE", 3:"PREMIUM", 4:"PROFESSIONAL"',
     enum: SurveyProductType,
   })
   @Column({ nullable: true })
@@ -121,10 +126,10 @@ export class Survey {
   questions: SurveyQuestion[];
 
   get header(): SurveyGuide | undefined {
-    return this.guides?.find((guide) => guide.type === 'HEADER');
+    return this.guides?.find((guide) => guide.type === SurveyGuideType.HEADER);
   }
 
   get footer(): SurveyGuide | undefined {
-    return this.guides?.find((guide) => guide.type === 'FOOTER');
+    return this.guides?.find((guide) => guide.type === SurveyGuideType.FOOTER);
   }
 }

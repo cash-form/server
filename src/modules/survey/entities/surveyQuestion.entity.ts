@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Survey } from './survey.entity';
+import { SurveyQuestionType } from 'src/types';
 
 @Entity()
 export class SurveyQuestion {
@@ -15,11 +16,12 @@ export class SurveyQuestion {
 
   @Column()
   @ApiProperty({
-    description: '질문 유형',
-    enum: ['multiple', 'subjective', 'descriptive', 'ox', 'point'],
-    example: 'multiple',
+    description:
+      '질문 유형 - 1: 객관식, 2: 주관식, 3: 서술형, 4: OX, 5: 포인트',
+    enum: SurveyQuestionType,
+    example: 1,
   })
-  type: 'multiple' | 'subjective' | 'descriptive' | 'ox' | 'point';
+  type: SurveyQuestionType;
 
   @Column()
   @ApiProperty({

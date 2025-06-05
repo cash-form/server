@@ -1,3 +1,5 @@
+import { getImageCategoryName } from './../../../types/index';
+import { ImageCategoryType } from 'src/types';
 import {
   Injectable,
   BadRequestException,
@@ -11,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import { Image } from '../entities/image.entity';
-import { ImageUploadDto, ImageType } from '../dtos/image-upload.dto';
+import { ImageUploadDto } from '../dtos/image-upload.dto';
 import ImageModel from '../models/image.model';
 
 @Injectable()
@@ -46,7 +48,7 @@ export class ImageService {
 
     try {
       // S3에 파일 업로드
-      const imageType = uploadDto.type || ImageType.GENERAL;
+      const imageType = uploadDto.type || ImageCategoryType.GENERAL;
       const s3Key = this.generateS3Key(file.originalname, imageType);
       const s3Url = await this.uploadToS3(file, s3Key);
 
@@ -103,10 +105,10 @@ export class ImageService {
     }
   }
 
-  private generateS3Key(originalName: string, type: ImageType): string {
+  private generateS3Key(originalName: string, type: ImageCategoryType): string {
     const extension = originalName.split('.').pop();
     const fileName = `${uuidv4()}.${extension}`;
-    const folder = type.toLowerCase();
+    const folder = getImageCategoryName(type).toLowerCase();
     const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
     return `images/${folder}/${timestamp}/${fileName}`;

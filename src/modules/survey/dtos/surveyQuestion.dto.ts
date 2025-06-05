@@ -7,16 +7,18 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { SurveyQuestionType } from 'src/types';
 
 export default class SurveyQuestionDto {
   @ApiProperty({
-    description: '질문 유형',
-    example: 'multiple',
-    enum: ['multiple', 'subjective', 'descriptive', 'ox', 'point'],
+    description:
+      '질문 유형 - 1: 객관식, 2: 주관식, 3: 서술형, 4: OX, 5: 포인트',
+    example: 5,
+    enum: SurveyQuestionType,
   })
-  @IsEnum(['multiple', 'subjective', 'descriptive', 'ox', 'point'])
+  @IsEnum(SurveyQuestionType)
   @IsNotEmpty()
-  type: 'multiple' | 'subjective' | 'descriptive' | 'ox' | 'point' = 'multiple';
+  type: SurveyQuestionType;
 
   @ApiProperty({
     description: '질문 제목',
@@ -37,7 +39,10 @@ export default class SurveyQuestionDto {
 
   @ApiProperty({
     description: '질문 관련 이미지 URL 목록',
-    example: [],
+    example: [
+      'https://example.com/image1.png',
+      'https://example.com/image2.png',
+    ],
     required: false,
     type: [String],
   })

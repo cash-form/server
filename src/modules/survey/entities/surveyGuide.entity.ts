@@ -7,19 +7,25 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Survey } from './survey.entity';
+import { SurveyGuideType } from 'src/types';
 
 @Entity()
 export class SurveyGuide {
+  @ApiProperty({
+    description: '가이드 ID',
+    type: Number,
+    example: 1,
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
   @ApiProperty({
-    description: '가이드 타입 (HEADER 또는 FOOTER)',
-    enum: ['HEADER', 'FOOTER'],
-    example: 'HEADER',
+    description: '가이드 타입 - 1: HEADER, 2: FOOTER',
+    enum: SurveyGuideType,
+    example: 1,
   })
   @Column()
-  type: 'HEADER' | 'FOOTER';
+  type: SurveyGuideType;
 
   @Column({ type: 'text', nullable: true })
   @ApiProperty({

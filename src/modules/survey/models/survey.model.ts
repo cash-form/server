@@ -37,9 +37,10 @@ export default class SurveyModel {
   endDate: Date;
 
   @ApiProperty({
-    description: '결제된 상품 명',
-    example: 'BASIC',
-    enum: ['BASIC', 'DELUXE', 'PREMIUM', 'PROFESSIONAL'],
+    description:
+      '결제된 상품 명 - 1:"BASIC", 2:"DELUXE", 3:"PREMIUM", 4:"PROFESSIONAL"',
+    example: 1,
+    enum: SurveyProductType,
   })
   @Expose()
   product: SurveyProductType;

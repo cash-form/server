@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { PaymentStatusType } from 'src/types';
+import { PaymentStatusType, PaymentType } from 'src/types';
 
 export default class PaymentModel {
   @ApiProperty({
@@ -34,12 +34,13 @@ export default class PaymentModel {
   date: Date;
 
   @ApiProperty({
-    description: '결제상태값',
-    example: 'SUCCESS',
+    description:
+      '결제상태값 - 1: SUCCESS, 2: FAILED, 3: PENDING, 4: CANCELED, 5: REFUNDED',
+    example: 1,
     enum: PaymentStatusType,
   })
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   @Expose({ name: 'status' })
   status: PaymentStatusType;
 
@@ -55,13 +56,14 @@ export default class PaymentModel {
   public readonly amount: number;
 
   @ApiProperty({
-    description: '결제 타입(대상)',
-    example: 'SURVEY',
+    description: '결제 타입(대상) - 1: 설문조사, 2: 크레딧',
+    example: 1,
+    enum: PaymentType,
   })
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   @Expose({ name: 'type' })
-  public readonly type: string;
+  public readonly type: PaymentType;
 
   @ApiProperty({
     description: '결제 상품명',

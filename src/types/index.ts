@@ -5,73 +5,96 @@ export interface AuthenticatedRequest extends Request {
 }
 
 export class BooleanResponseType {
-  result: Boolean = true;
+  result: Boolean;
 }
 
-export enum UserStatusType {
-  NORMAL = 1,
-  BANNED = 2,
-  DELETED = 3,
-}
+export const UserStatusType = {
+  NORMAL: 1,
+  BANNED: 2,
+  DELETED: 3,
+} as const;
+export type UserStatusType =
+  (typeof UserStatusType)[keyof typeof UserStatusType];
 
-export enum UserType {
-  NORMAL = 1,
-  ADMIN = 2,
-}
+export const UserType = {
+  NORMAL: 1,
+  ADMIN: 2,
+} as const;
+export type UserType = (typeof UserType)[keyof typeof UserType];
 
 export const SurveyProductType = {
-  1: 'BASIC',
-  2: 'DELUXE',
-  3: 'PREMIUM',
-  4: 'PROFESSIONAL',
+  BASIC: 1,
+  DELUXE: 2,
+  PREMIUM: 3,
+  PROFESSIONAL: 4,
 } as const;
 export type SurveyProductType =
   (typeof SurveyProductType)[keyof typeof SurveyProductType];
 
 export const SurveyGuideType = {
-  1: 'HEADER',
-  2: 'FOOTER',
+  HEADER: 1,
+  FOOTER: 2,
 } as const;
 export type SurveyGuideType =
   (typeof SurveyGuideType)[keyof typeof SurveyGuideType];
 
 export const SurveyStatusType = {
-  1: 'BEFORE',
-  2: 'PROGRESS',
-  3: 'FINISH',
-  4: 'DELETED',
+  BEFORE: 1,
+  PROGRESS: 2,
+  FINISH: 3,
+  DELETED: 4,
 } as const;
 export type SurveyStatusType =
   (typeof SurveyStatusType)[keyof typeof SurveyStatusType];
 
 export const SurveyQuestionType = {
-  1: 'multiple',
-  2: 'subjective',
-  3: 'descriptive',
-  4: 'ox',
-  5: 'point',
+  multiple: 1,
+  subjective: 2,
+  descriptive: 3,
+  ox: 4,
+  point: 5,
 } as const;
 export type SurveyQuestionType =
   (typeof SurveyQuestionType)[keyof typeof SurveyQuestionType];
 
 export const PaymentStatusType = {
-  1: 'SUCCESS',
-  2: 'FAILED',
-  3: 'PENDING',
-  4: 'CANCELED',
-  5: 'REFUNDED',
+  SUCCESS: 1,
+  FAILED: 2,
+  PENDING: 3,
+  CANCELED: 4,
+  REFUNDED: 5,
 } as const;
 export type PaymentStatusType =
   (typeof PaymentStatusType)[keyof typeof PaymentStatusType];
 
 export const PaymentType = {
-  1: 'SURVEY',
+  SURVEY: 1,
+  CREDIT: 2,
 } as const;
 export type PaymentType = (typeof PaymentType)[keyof typeof PaymentType];
 
 export const PaymentMethodType = {
-  1: 'CARD',
-  2: 'BANK',
+  CARD: 1,
+  BANK: 2,
 } as const;
 export type PaymentMethodType =
   (typeof PaymentMethodType)[keyof typeof PaymentMethodType];
+
+export const ImageCategoryType = {
+  SURVEY: 1,
+  PROFILE: 2,
+  PRODUCT: 3,
+  GENERAL: 4,
+} as const;
+export type ImageCategoryType =
+  (typeof ImageCategoryType)[keyof typeof ImageCategoryType];
+
+export const getImageCategoryName = (key: number) => {
+  Object.keys(ImageCategoryType).forEach((name) => {
+    if (ImageCategoryType[name] === key) {
+      return name;
+    }
+  });
+
+  return 'UNKNOWN';
+};

@@ -15,6 +15,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import ImageModel from '../models/image.model';
+import { ImageUploadDto } from '../dtos/image-upload.dto';
 
 export function UploadImageSwagger() {
   return applyDecorators(
@@ -26,6 +27,7 @@ export function UploadImageSwagger() {
     ApiConsumes('multipart/form-data'),
     ApiBody({
       description: '이미지 파일과 메타데이터',
+      type: ImageUploadDto,
       schema: {
         type: 'object',
         properties: {
@@ -39,7 +41,7 @@ export function UploadImageSwagger() {
             type: 'string',
             enum: ['SURVEY', 'PROFILE', 'PRODUCT', 'GENERAL'],
             description:
-              '이미지 사용 용도 / "SURVEY", "PROFILE", "PRODUCT", "GENERAL"',
+              '이미지 사용 용도 / 1: 설문조사, 2: 프로필, 3: 상품, 4: 일반',
             default: 'GENERAL',
           },
         },

@@ -1,6 +1,7 @@
 import { Expose } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaymentType } from 'src/types';
 
 export class PaymentDto {
   @ApiProperty({
@@ -26,13 +27,14 @@ export class PaymentDto {
   public readonly amount: number;
 
   @ApiProperty({
-    description: '결제 타입(대상)',
-    example: 'SURVEY',
+    description: '결제 타입(대상) - 1: 설문조사, 2: 크레딧',
+    example: 1,
+    enum: PaymentType,
   })
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   @Expose({ name: 'type' })
-  public readonly type: string;
+  public readonly type: PaymentType;
 
   @ApiProperty({
     description: '결제 상품명',
