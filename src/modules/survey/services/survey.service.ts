@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Survey } from '../entities/survey.entity';
@@ -7,7 +12,9 @@ import { SurveyQuestion } from '../entities/surveyQuestion.entity';
 import { SurveyDto } from '../dtos/survey.dto';
 import { User } from 'src/modules/user/entities/user.entity';
 import SurveyModel from '../models/survey.model';
-import SurveyQuestionModel from '../models/surveyQuestion.model';
+import { PaginationModel } from 'src/common/models/pagination.model';
+import PaginationDto from 'src/common/dtos/pagination.dto';
+import { PaginationService } from 'src/common/services/pagination.service';
 
 @Injectable()
 export class SurveyService {
@@ -20,11 +27,10 @@ export class SurveyService {
     private readonly questionRepository: Repository<SurveyQuestion>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly paginationService: PaginationService,
   ) {}
 
   async createSurvey(id: number, surveyDto: SurveyDto): Promise<SurveyModel> {
-    console.log('Creating survey with data:', surveyDto);
-
     const author = await this.userRepository.findOne({
       where: { id },
     });
@@ -40,50 +46,90 @@ export class SurveyService {
       product: surveyDto.product,
       authorId: id,
     });
-
     const savedSurvey = await this.surveyRepository.save(survey);
 
-    if (surveyDto.header) {
-      const headerGuide = this.guideRepository.create({
-        type: 'HEADER',
-        text: surveyDto.header.text,
-        images: surveyDto.header.images,
+    const newHeader = this.guideRepository.create({
+      ...surveyDto.header,
+      type: 'HEADER',
+      survey: savedSurvey,
+    });
+
+    const newFooter = this.guideRepository.create({
+      ...surveyDto.footer,
+      type: 'FOOTER',
+      survey: savedSurvey,
+    });
+
+    await this.guideRepository.save(newHeader);
+    await this.guideRepository.save(newFooter);
+
+    for (let i = 0; i < surveyDto.questions.length; i++) {
+      const questionDto = surveyDto.questions[i];
+      const question = this.questionRepository.create({
+        ...questionDto,
+        orderIndex: i,
         survey: savedSurvey,
       });
-      await this.guideRepository.save(headerGuide);
+
+      await this.questionRepository.save(question);
     }
 
-    if (surveyDto.footer) {
-      const footerGuide = this.guideRepository.create({
-        type: 'FOOTER',
-        text: surveyDto.footer.text,
-        images: surveyDto.footer.images,
-        survey: savedSurvey,
-      });
-      await this.guideRepository.save(footerGuide);
+    return await this.findCompleteSurvey(savedSurvey.id);
+  }
+
+  async getSurveyDetail(id: number): Promise<SurveyModel> {
+    return await this.findCompleteSurvey(id);
+  }
+  async getSurveyList(
+    paginationDto: PaginationDto,
+  ): Promise<PaginationModel<SurveyModel>> {
+    const searchFields = ['title'];
+    const relations = ['author'];
+
+    const result = await this.paginationService.paginate<Survey>(
+      this.surveyRepository,
+      paginationDto,
+      relations,
+      searchFields,
+    );
+
+    // Survey 엔티티를 SurveyModel로 변환
+    const transformedList = result.list.map((survey) =>
+      plainToInstance(SurveyModel, survey, {
+        excludeExtraneousValues: false,
+        exposeUnsetFields: false,
+      }),
+    );
+
+    return {
+      ...result,
+      list: transformedList,
+    };
+  }
+
+  async deleteSurvey(userId: number, id: number): Promise<void> {
+    const survey = await this.surveyRepository.findOne({ where: { id } });
+
+    if (!survey) {
+      throw new NotFoundException(
+        '해당 설문조사가 이미 삭제되었거나 존재하지 않습니다.',
+      );
     }
 
-    if (surveyDto.questions && surveyDto.questions.length > 0) {
-      for (let i = 0; i < surveyDto.questions.length; i++) {
-        const questionDto = surveyDto.questions[i];
-        const question = this.questionRepository.create({
-          type: questionDto.type,
-          title: questionDto.title,
-          text: questionDto.text,
-          images: questionDto.images,
-          options: questionDto.options, // 옵션을 바로 question에 저장
-          multipleCount: questionDto.multipleCount,
-          maxLength: questionDto.maxLength,
-          orderIndex: i,
-          survey: savedSurvey,
-        });
-
-        await this.questionRepository.save(question);
-      }
+    if (+survey.authorId !== userId) {
+      throw new ForbiddenException('해당 설문조사를 삭제할 권한이 없습니다.');
     }
 
+    const deleteSurvey = { ...survey, isDeleted: true };
+
+    await this.surveyRepository.save(deleteSurvey);
+
+    return;
+  }
+
+  async findCompleteSurvey(id: number): Promise<SurveyModel> {
     const completeSurvey = await this.surveyRepository.findOne({
-      where: { id: savedSurvey.id },
+      where: { id },
       relations: ['guides', 'questions', 'author'],
     });
 
@@ -91,53 +137,24 @@ export class SurveyService {
       throw new NotFoundException('생성된 설문조사를 찾을 수 없습니다.');
     }
 
-    // Survey 엔티티를 SurveyModel로 변환하기 전에 header와 footer 정보 추출
-    const surveyModel = new SurveyModel();
-    surveyModel.id = completeSurvey.id;
-    surveyModel.title = completeSurvey.title;
-    surveyModel.startDate = completeSurvey.startDate;
-    surveyModel.endDate = completeSurvey.endDate;
-    surveyModel.product = completeSurvey.product;
-    surveyModel.createdAt = completeSurvey.createdAt;
-    surveyModel.updatedAt = completeSurvey.updatedAt;
-    surveyModel.author = completeSurvey.author;
-    surveyModel.participantCount = completeSurvey.participantCount || 0;
-
-    // 질문 변환
-    surveyModel.questions = completeSurvey.questions.map((q) => {
-      const questionModel = new SurveyQuestionModel();
-      questionModel.type = q.type;
-      questionModel.title = q.title;
-      questionModel.text = q.text || '';
-      questionModel.images = q.images || [];
-      questionModel.options = q.options || [];
-      questionModel.multipleCount = q.multipleCount || 0;
-      questionModel.maxLength = q.maxLength || 0;
-      return questionModel;
-    });
-
-    // header와 footer 처리
     const headerGuide = completeSurvey.guides?.find(
       (guide) => guide.type === 'HEADER',
     );
-    if (headerGuide) {
-      surveyModel.header = {
-        text: headerGuide.text || '',
-        images: headerGuide.images || [],
-      };
-    }
 
     const footerGuide = completeSurvey.guides?.find(
       (guide) => guide.type === 'FOOTER',
     );
-    if (footerGuide) {
-      surveyModel.footer = {
-        text: footerGuide.text || '',
-        images: footerGuide.images || [],
-      };
-    }
 
-    return surveyModel;
+    return plainToInstance(
+      SurveyModel,
+      {
+        ...completeSurvey,
+        headers: headerGuide,
+        footers: footerGuide,
+      },
+      {
+        excludeExtraneousValues: false,
+      },
+    );
   }
-
 }

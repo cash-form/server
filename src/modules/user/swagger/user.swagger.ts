@@ -122,7 +122,7 @@ export function DeleteUserSwagger() {
     ApiBearerAuth(),
     ApiOperation({
       summary: '회원탈퇴',
-      description: '현재 사용자를 탈퇴 처리합니다.',
+      description: '현재 사용자를 탈퇴 처리합니다. (soft delete)',
     }),
     ApiResponse({
       status: 204,

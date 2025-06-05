@@ -53,3 +53,25 @@ export const SurveyQuestionType = {
 } as const;
 export type SurveyQuestionType =
   (typeof SurveyQuestionType)[keyof typeof SurveyQuestionType];
+
+export const PaymentStatusType = {
+  1: 'SUCCESS',
+  2: 'FAILED',
+  3: 'PENDING',
+  4: 'CANCELED',
+  5: 'REFUNDED',
+} as const;
+export type PaymentStatusType =
+  (typeof PaymentStatusType)[keyof typeof PaymentStatusType];
+
+export const PaymentType = {
+  1: 'SURVEY',
+} as const;
+export type PaymentType = (typeof PaymentType)[keyof typeof PaymentType];
+
+export const PaymentMethodType = {
+  1: 'CARD',
+  2: 'BANK',
+} as const;
+export type PaymentMethodType =
+  (typeof PaymentMethodType)[keyof typeof PaymentMethodType];

@@ -62,6 +62,6 @@ export class UserController {
   @DeleteUserSwagger()
   async delete(@Req() req: AuthenticatedRequest): Promise<void> {
     const userId = req.user.sub;
-    await this.userService.deleteUser(userId);
+    return await this.userService.deleteUser(userId);
   }
 }

@@ -11,6 +11,7 @@ import {
   Body,
   BadRequestException,
   NotFoundException,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from '../services/image.service';
@@ -21,6 +22,7 @@ import {
   UploadImageSwagger,
   GetImageSwagger,
   GetUserImagesSwagger,
+  DeleteImageSwagger,
 } from '../swagger/image.swagger';
 import ImageModel from '../models/image.model';
 import { ImageUploadDto } from '../dtos/image-upload.dto';
@@ -63,5 +65,16 @@ export class ImageController {
   async getUserImages(@Req() req: AuthenticatedRequest): Promise<ImageModel[]> {
     const userId = req.user.sub;
     return await this.imageService.getUserImages(userId);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @DeleteImageSwagger()
+  async deleteImage(
+    @Req() req: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    const userId = req.user.sub;
+    return await this.imageService.deleteImage(userId, id);
   }
 }

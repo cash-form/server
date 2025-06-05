@@ -1,6 +1,7 @@
 import {
   applyDecorators,
   BadRequestException,
+  ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
@@ -124,6 +125,39 @@ export function GetUserImagesSwagger() {
       status: 401,
       description: '인증되지 않은 사용자',
       example: new UnauthorizedException('인증이 필요합니다.'),
+    }),
+  );
+}
+
+export function DeleteImageSwagger() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '이미지 삭제',
+      description: '이미지를 영구적으로 삭제합니다. (hard delete)',
+    }),
+    ApiBearerAuth(),
+    ApiResponse({
+      status: 204,
+      description: '삭제 성공',
+    }),
+    ApiResponse({
+      status: 403,
+      description: '해당 이미지 삭제권한 없음',
+      example: new ForbiddenException('이미지를 삭제할 권한이 없습니다.'),
+    }),
+    ApiResponse({
+      status: 404,
+      description: '이미지 확인 불가능',
+      example: new NotFoundException(
+        '해당 이미지는 이미 삭제되었거나 존재하지 않습니다.',
+      ),
+    }),
+    ApiResponse({
+      status: 500,
+      description: '서버 에러',
+      example: new InternalServerErrorException(
+        '삭제과정에서 서버문제가 발생했습니다.',
+      ),
     }),
   );
 }
