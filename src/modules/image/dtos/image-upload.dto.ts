@@ -14,11 +14,4 @@ export class ImageUploadDto {
   @IsOptional()
   @IsEnum(ImageCategoryType)
   type?: ImageCategoryType = ImageCategoryType.GENERAL;
-
-  @ApiProperty({
-    description: '업로드할 이미지 파일 (JPEG, PNG, GIF, WebP 지원, 최대 10MB)',
-    type: 'string',
-    format: 'binary',
-  })
-  file: any;
 }
