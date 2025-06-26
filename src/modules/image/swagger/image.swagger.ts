@@ -15,7 +15,6 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import ImageModel from '../models/image.model';
-import { ImageUploadDto } from '../dtos/image-upload.dto';
 
 export function UploadImageSwagger() {
   return applyDecorators(
@@ -26,26 +25,22 @@ export function UploadImageSwagger() {
     ApiBearerAuth(),
     ApiConsumes('multipart/form-data'),
     ApiBody({
-      description: '이미지 파일과 메타데이터',
-      type: ImageUploadDto,
-      schema: {
-        type: 'object',
-        properties: {
-          file: {
-            type: 'string',
-            format: 'binary',
-            description:
-              '업로드할 이미지 파일 (JPEG, PNG, GIF, WebP 지원, 최대 10MB)',
+      description: '이미지 파일과 메타데이터 두 컬럼으로 구성된 폼데이터',
+      examples: {
+        file: {
+          value: {
+            name: 'my-image.jpg',
+            type: 'image/jpeg',
+            size: 1024000,
+            data: 'base64-encoded-image-data',
           },
-          type: {
-            type: 'string',
-            enum: ['SURVEY', 'PROFILE', 'PRODUCT', 'GENERAL'],
-            description:
-              '이미지 사용 용도 / 1: 설문조사, 2: 프로필, 3: 상품, 4: 일반',
-            default: 'GENERAL',
-          },
+          description: '업로드할 이미지 파일',
         },
-        required: ['file'],
+        type: {
+          description:
+            '이미지 사용 용도 타입 - 1: 설문조사, 2: 프로필, 3: 상품, 4: 공용 / 기본값 4 (일반)',
+          value: 4,
+        },
       },
     }),
     ApiResponse({

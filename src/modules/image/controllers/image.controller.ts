@@ -8,16 +8,16 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
-  Body,
   BadRequestException,
   NotFoundException,
   Delete,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from '../services/image.service';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { AuthenticatedRequest } from 'src/types';
+import { AuthenticatedRequest, ImageCategoryType } from 'src/types';
 import {
   UploadImageSwagger,
   GetImageSwagger,
@@ -25,7 +25,6 @@ import {
   DeleteImageSwagger,
 } from '../swagger/image.swagger';
 import ImageModel from '../models/image.model';
-import { ImageUploadDto } from '../dtos/image-upload.dto';
 
 @ApiTags('이미지')
 @Controller('images')
@@ -39,14 +38,14 @@ export class ImageController {
   async uploadImage(
     @Req() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
-    @Body() uploadDto: ImageUploadDto,
+    @Body('type') type: ImageCategoryType = ImageCategoryType.GENERAL,
   ): Promise<ImageModel> {
     if (!file) {
       throw new BadRequestException('파일이 제공되지 않았습니다.');
     }
 
     const userId = req.user.sub;
-    return await this.imageService.uploadImage(userId, file, uploadDto);
+    return await this.imageService.uploadImage(userId, file, type);
   }
 
   @Get(':id')

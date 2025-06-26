@@ -97,7 +97,6 @@ export function FindMeSwagger() {
       status: 200,
       description: '조회 성공',
       type: UserModel,
-      example: { id: 1, email: 'user123@email.com' },
     }),
     ApiResponse({
       status: 401,

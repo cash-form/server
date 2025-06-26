@@ -38,6 +38,14 @@ export default class UserDetailModel {
   @Expose()
   userType: UserType;
 
+  @ApiProperty({
+    description: '유저 크레딧',
+    example: 3000,
+    type: Number,
+  })
+  @Expose()
+  credit: number;
+
   @Exclude()
   marketingConsent: boolean = false;
 
