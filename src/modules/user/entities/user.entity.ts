@@ -37,6 +37,14 @@ export class User {
   nickname: string;
 
   @ApiProperty({
+    description: '보유 크레딧',
+    example: 3000,
+    type: Number,
+  })
+  @Column({ nullable: true, default: 0 })
+  credit: string;
+
+  @ApiProperty({
     description: '사용자 상태값, 1: 정상, 2: 제명, 3: 탈퇴',
     example: 1,
     type: Number,

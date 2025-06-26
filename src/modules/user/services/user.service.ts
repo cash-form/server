@@ -62,14 +62,14 @@ export class UserService {
     return true; // 사용자가 없으면 사용 가능
   }
 
-  async findById(id: number): Promise<User> {
+  async findById(id: number): Promise<UserModel> {
     const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user || user.isDeleted) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
 
-    const transformUser = plainToInstance(User, user, {
+    const transformUser = plainToInstance(UserModel, user, {
       excludeExtraneousValues: false,
     });
 

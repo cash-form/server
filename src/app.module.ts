@@ -11,6 +11,7 @@ import { SurveyModule } from './modules/survey/survey.module';
 import { ImageModule } from './modules/image/image.module';
 import { PaginationModule } from './common/modules/pagination.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { CreditModule } from './modules/credit/credit.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { PaymentModule } from './modules/payment/payment.module';
     SurveyModule,
     ImageModule,
     PaymentModule,
+    CreditModule,
   ],
 })
 export class AppModule {}

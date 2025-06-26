@@ -13,7 +13,6 @@ import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import { Image } from '../entities/image.entity';
-import { ImageUploadDto } from '../dtos/image-upload.dto';
 import ImageModel from '../models/image.model';
 
 @Injectable()
@@ -41,20 +40,19 @@ export class ImageService {
   async uploadImage(
     userId: number,
     file: Express.Multer.File,
-    uploadDto: ImageUploadDto,
+    type: ImageCategoryType = ImageCategoryType.GENERAL,
   ): Promise<ImageModel> {
     // 파일 유효성 검증
     this.validateImageFile(file);
 
     try {
       // S3에 파일 업로드
-      const imageType = uploadDto.type || ImageCategoryType.GENERAL;
-      const s3Key = this.generateS3Key(file.originalname, imageType);
+      const s3Key = this.generateS3Key(file.originalname, type);
       const s3Url = await this.uploadToS3(file, s3Key);
 
       // 데이터베이스에 이미지 정보 저장
       const image = this.imageRepository.create({
-        type: imageType,
+        type: type,
         url: s3Url,
         originalName: file.originalname,
         size: file.size,
